@@ -1,0 +1,108 @@
+﻿@model IEnumerable<Film>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
+<br />
+<h2>
+    Каталог фильмов 
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a asp-action="Create" asp-controller="Films" style="margin-left: 10px;" title="Добавить новый фильм" class="btn btn-primary btn-sm">
+            <span class="fa fa-plus" aria-hidden="true"></span></a> 
+    }
+</h2>
+
+<p>Показывать по 
+    <a asp-action="Index" asp-route-c="10" style="text-decoration: underline;" class="@(String.IsNullOrEmpty(Context.Request.Query["p"]) ? "active" : null)">10</a>
+    <a asp-action="Index" asp-route-c="30" style="text-decoration: underline;">30</a>
+    <a asp-action="Index" asp-route-c="50" style="text-decoration: underline;">50</a>
+</p>
+<table class="table">
+    <tr style="background-color: #dedede">
+        <th>
+            <label>Постер</label></th>
+        <th>
+            <label>Название</label></th>
+        <th>
+            <label>Год</label></th>
+        <th>
+            <label>Режиссер</label></th>
+        <th>
+            <label>Описание</label></th>
+        <th>
+            <label>Добавил</label></th>
+        <th style="min-width: 90px;"></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr class="selectableRow" onclick="location.href = '@Url.Action("Details", "Films", new { id = item.Id })'">
+            <td>
+                @if (item.Img != null)
+                {
+                    <img height="70" width="70" src="data:image;base64,@(item.Img == null ? null : Convert.ToBase64String(item.Img))" />
+                }
+                else {
+                    <img height="70" width="70" src="~/img/empty.jpg" />
+                } <br />
+            </td>
+            <td>
+                <label asp-for="@item.Name"></label></td>
+            <td>
+                <label asp-for="@item.Year"></label></td>
+            <td>
+                <label asp-for="@item.Director"></label></td>
+            <td>
+                <label>@(item.Description.Length > 100 ? item.Description.Substring(0, 50) + "..." : item.Description)</label></td>
+            <td>
+                <label>@(item.Creator.LastName + " " + item.Creator.FirstName + " " + item.Creator.MiddleName)</label></td>
+            <td>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @if (item.CreatorId == user.Id)
+                    {
+                        <div class="row">
+                            <div class="col-md-6 text-right">
+                                <a asp-action="Edit" asp-controller="Films" asp-route-id="@item.Id" title="Редактировать" class="btn btn-warning btn-sm">
+                                    <span class="fa fa-pencil" aria-hidden="true"></span>
+                                </a>
+                            </div>
+                            <div class="col-md-6 text-left">
+                                <a asp-action="Delete" asp-controller="Films" asp-route-id="@item.Id" title="Удалить" class="btn btn-danger btn-sm">
+                                    <span class="fa fa-remove" aria-hidden="true"></span>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                }
+            </td>
+        </tr>
+    }
+    <tr>
+        <td colspan="7" class="text-center">
+            @if (ViewData["prevPage"].ToString() != "0")
+            {
+                <a asp-action="Index"
+                   asp-route-p="@ViewData["prevPage"]"
+                   asp-route-c="@Context.Request.Query["c"]"
+                   class="btn btn-outline-dark">
+                    <i class="fa fa-chevron-left"></i>
+                    Предыдущая
+                </a>
+            }
+            @if (ViewData["nextPage"].ToString() != "0")
+            {
+                <a asp-action="Index"
+                   asp-route-p="@ViewData["nextPage"]"
+                   asp-route-c="@Context.Request.Query["c"]"
+                   class="btn btn-outline-dark">
+                    Следующая
+                    <i class="fa fa-chevron-right"></i>
+                </a>
+            }
+        </td>
+    </tr>
+</table>
+
+

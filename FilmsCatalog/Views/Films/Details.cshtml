@@ -1,0 +1,61 @@
+﻿@model FilmsCatalog.Models.Film
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@{
+    var user = await UserManager.GetUserAsync(User);
+    ViewData["Title"] = "Подробности";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+    <dl class="row">
+        <div class="col-sm-4">
+            @if (Model.Img != null)
+            {
+                <img height="300" width="300" src="data:image;base64,@(Model.Img == null ? null : Convert.ToBase64String(Model.Img))" />
+            }
+            else
+            {
+                <img height="300" width="300" src="~/img/empty.jpg" />
+            }
+        </div>
+        <div class="col-sm-8">
+            <div class="row">
+                <dt class="col-sm-2">
+                    <label>Название</label>
+                </dt>
+                <dd class="col-sm-10">
+                    <label asp-for="Name"></label>
+                </dd>
+                <dt class="col-sm-2">
+                    <label>Год</label>
+                </dt>
+                <dd class="col-sm-10">
+                    <label asp-for="Year"></label>
+                </dd>
+                <dt class="col-sm-2">
+                    <lable>Режисёр</lable>
+                </dt>
+                <dd class="col-sm-10">
+                    <label asp-for="Director"></label>
+                </dd>
+                <dt class="col-sm-2">
+                    <lable>Добавил</lable>
+                </dt>
+                <dd class="col-sm-10">
+                    <label>@(Model.Creator.LastName + " " + Model.Creator.FirstName + " " + Model.Creator.MiddleName)</label>
+                </dd>
+                <dt class="col-sm-2">
+                    <lable>Описание</lable>
+                </dt>
+                <dd class="col-sm-10">
+                    <label asp-for="Description"></label>
+                </dd>
+            </div>
+        </div>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" title="Редактировать" class="btn btn-warning btn-sm">Редактировать</a>
+    <a asp-action="Index" class="btn btn-secondary btn-sm">Назад</a>
+</div>
